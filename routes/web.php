@@ -11,6 +11,13 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'ProductController@index')->name('products.root');
+
+Route::resource('/products', 'ProductController');
+Route::get('/products/{product}/delete', 'ProductController@delete')->name('products.delete');
+
+Route::resource('/types', 'TypeController');
+Route::get('/types/{type}/delete', 'TypeController@delete')->name('types.delete');
+
+Route::resource('/attributes', 'AttributeController');
+Route::get('/attributes/{attribute}/delete', 'AttributeController@delete')->name('attributes.delete');

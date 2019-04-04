@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Attribute;
+use App\Models\Type;
+
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Carbon;
 
 use Validator;
 
@@ -43,7 +48,10 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('products.create');
+        $attributes = Attribute::orderBy('id', 'desc')->get();
+        $types = Type::orderBy('id', 'desc')->get();
+
+        return view('products.create', compact('attributes', 'types'));
     }
 
     /**
@@ -62,7 +70,8 @@ class ProductController extends Controller
             'image' => 'nullable|file'
         ]);
 
-        if ($validator->fails()) {
+        if ($validator->fails())
+        {
             return redirect()
                 ->route('products.create')
                 ->withErrors($validator, 'store')
@@ -74,7 +83,29 @@ class ProductController extends Controller
             $productData['image'] = Storage::disk('public')->putFile('products', $request->file('image'));
         }
 
-        Product::create($productData);
+        $newProduct = Product::create($productData);
+
+        if($request->has('attributes'))
+        {
+            $attributes = $request->input('attributes');
+
+            foreach($attributes as $attribute)
+            {
+                $validator = Validator::make($attribute, [
+                    'id' => 'integer',
+                    'value' => 'max:255'
+                ]);
+
+                if (!$validator->fails())
+                {
+                    DB::table('products_attributes')->insert([
+                        'product_id' => $newProduct->id,
+                        'attribute_id' => $attribute['id'],
+                        'value' => $attribute['value']
+                    ]);
+                }
+            }
+        }
 
         Session::flash('responseMessages', [
             'success' => __('products.successful_added')
@@ -91,6 +122,11 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        /*foreach($product->attributes as $attr)
+        {
+            echo $attr['name'].' : '.$attr->pivot->value;
+        }*/
+
         return view('products.show', compact('product'));
     }
 
@@ -102,7 +138,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        $attributes = Attribute::all();
+        $types = Type::all();
+
+        return view('products.edit', compact('product', 'attributes', 'types'));
     }
 
     /**
@@ -123,7 +162,8 @@ class ProductController extends Controller
             'delete' => 'integer'
         ]);
 
-        if ($validator->fails()) {
+        if ($validator->fails())
+        {
             return redirect()
                 ->route('products.edit', ['product' => $product->id])
                 ->withErrors($validator, 'edit')
@@ -142,6 +182,32 @@ class ProductController extends Controller
         }
 
         $product->update($productData);
+
+        DB::table('products_attributes')
+            ->where('product_id', '=', $product->id)
+            ->delete();
+
+        if($request->has('attributes'))
+        {
+            $attributes = $request->input('attributes');
+
+            foreach($attributes as $attribute)
+            {
+                $validator = Validator::make($attribute, [
+                    'id' => 'integer',
+                    'value' => 'max:255'
+                ]);
+
+                if (!$validator->fails())
+                {
+                    DB::table('products_attributes')->insert([
+                        'product_id' => $product->id,
+                        'attribute_id' => $attribute['id'],
+                        'value' => $attribute['value']
+                    ]);
+                }
+            }
+        }
 
         Session::flash('responseMessages', [
             'success' => __('products.successful_updated')

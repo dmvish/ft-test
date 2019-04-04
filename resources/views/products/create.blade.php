@@ -1,5 +1,9 @@
 @extends('layouts.main')
 
+@push('scripts')
+    <script src="{{ asset('public/js/products.js') }}"></script>
+@endpush
+
 @section('content')
     <div class="col-12">
         <div class="page-title">
@@ -34,20 +38,62 @@
                     </span>
                 @endif
             </div>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-6">
-                        <label for="product-image">{{ __('products.image_field_label') }}</label>
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="product-image" name="image">
-                            <label class="custom-file-label" for="product-image">{{ __('products.image_choose_label') }}</label>
-                        </div>
-                        @if ($errors->store->has('image'))
-                            <span class="invalid-feedback" role="alert">
+            <div class="form-group row align-items-center">
+                <div class="col-2">
+                    <label for="product-image">{{ __('products.image_field_label') }}</label>
+                </div>
+                <div class="col-5">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="product-image" name="image">
+                        <label class="custom-file-label" for="product-image">{{ __('products.image_choose_label') }}</label>
+                    </div>
+                    @if ($errors->store->has('image'))
+                        <span class="invalid-feedback" role="alert">
                                 <strong>{{ $errors->store->first('image') }}</strong>
                             </span>
-                        @endif
-                    </div>
+                    @endif
+                </div>
+            </div>
+            <div class="form-group row align-items-center">
+                <div class="col-2">
+                    <label for="product-description">{{ __('products.type_field_label') }}</label>
+                </div>
+                <div class="col-5">
+                    <select class="custom-select" name="type_id" id="product-type">
+                        @foreach($types as $type)
+                            <option value="{{ $type->id }}">{{ $type->name}}</option>
+                        @endforeach
+                    </select>
+                    @if ($errors->store->has('type_id'))
+                        <span class="invalid-feedback" role="alert">
+                        <strong>{{ $errors->store->first('type_id') }}</strong>
+                    </span>
+                    @endif
+                </div>
+            </div>
+            <div class="form-group row align-items-center">
+                <div class="col-2">
+                    <label for="product-description">{{ __('products.attributes_field_label') }}</label>
+                </div>
+                <div class="col-5">
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-attr-add>{{ __('products.add_attribute') }}</button>
+                </div>
+            </div>
+            <div data-attr-list></div>
+            <div class="form-group row align-items-center d-none" data-attr-temp>
+                <div class="col-2"></div>
+                <div class="col-5">
+                    <select class="custom-select" name="_id" id="product-attr">
+                        @foreach($attributes as $attribute)
+                            <option value="{{ $attribute->id }}">{{ $attribute->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-4">
+                    <input type="text" class="form-control{{ $errors->store->has('name') ? ' is-invalid' : '' }}" value="{{ old('name') }}" name="_value" id="product-name">
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-attr-remove>&times;</button>
                 </div>
             </div>
             <button type="submit" class="btn btn-primary">{{ __('common.create_button_text') }}</button>

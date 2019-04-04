@@ -12,8 +12,20 @@
                 <div class="col-md-8">
                     <div class="card-body">
                         <h5 class="card-title">{{ $product->name }}</h5>
-                        @if($product->description)
-                        <p class="card-text">{{ $product->description }}</p>
+                        <p class="card-text">
+                            @if($product->description)
+                                {{ $product->description }}
+                            @endif
+                            @if($product->type)
+                            <p><strong>Тип товара:</strong> {{ $product->type->name }}</p>
+                            @endif
+                        </p>
+                        @if($product->attributes)
+                            <ul class="list-unstyled">
+                                @foreach($product->attributes as $attr)
+                                    <li><strong>{{ $attr['name'] }}:</strong> {{ $attr->pivot->value }}</li>
+                                @endforeach
+                            </ul>
                         @endif
                         <p class="card-text">
                             <a href="{{ route('products.edit', ['product' => $product->id]) }}" class="card-link">{{ __('common.edit_link_text') }}</a>

@@ -9,4 +9,9 @@ class Attribute extends Model
     protected $fillable = [
         'name'
     ];
+
+    public function products()
+    {
+        return $this->belongsToMany('App\Models\Product', 'products_attributes')->withPivot('value');
+    }
 }

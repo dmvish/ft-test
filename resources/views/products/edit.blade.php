@@ -1,5 +1,9 @@
 @extends('layouts.main')
 
+@push('scripts')
+    <script src="{{ asset('public/js/products.js') }}"></script>
+@endpush
+
 @section('content')
     <div class="col-12">
         <div class="page-title">
@@ -60,7 +64,67 @@
                     </div>
                 </div>
             </div>
-
+            <div class="form-group row align-items-center">
+                <div class="col-2">
+                    <label for="product-description">{{ __('products.type_field_label') }}</label>
+                </div>
+                <div class="col-5">
+                    <select class="custom-select" name="type_id" id="product-type">
+                        @foreach($types as $type)
+                            <option value="{{ $type->id }}" @if($product->type_id == $type->id) selected="selected" @endif>{{ $type->name}}</option>
+                        @endforeach
+                    </select>
+                    @if ($errors->store->has('type_id'))
+                        <span class="invalid-feedback" role="alert">
+                        <strong>{{ $errors->store->first('type_id') }}</strong>
+                    </span>
+                    @endif
+                </div>
+            </div>
+            <div class="form-group row align-items-center">
+                <div class="col-2">
+                    <label for="product-description">{{ __('products.attributes_field_label') }}</label>
+                </div>
+                <div class="col-5">
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-attr-add>{{ __('products.add_attribute') }}</button>
+                </div>
+            </div>
+            <div data-attr-list>
+                @foreach($product->attributes as $index => $attr)
+                    <div class="form-group row align-items-center _attr-item" id="item{{ $index }}">
+                        <div class="col-2"></div>
+                        <div class="col-5">
+                            <select class="custom-select" name="attributes[{{ $attr['id'] }}][id]" id="product-attr">
+                                @foreach($attributes as $attribute)
+                                    <option value="{{ $attribute->id }}" @if($attr->pivot->attribute_id == $attribute->id) selected="selected" @endif>{{ $attribute->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <input type="text" class="form-control{{ $errors->store->has('name') ? ' is-invalid' : '' }}" value="{{ $attr->pivot->value }}" name="attributes[{{ $attr['id'] }}][value]" id="product-name">
+                        </div>
+                        <div class="col-1">
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-attr-remove="#item{{ $index }}">&times;</button>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            <div class="form-group row align-items-center d-none" data-attr-temp>
+                <div class="col-2"></div>
+                <div class="col-5">
+                    <select class="custom-select" name="_id" id="product-attr">
+                        @foreach($attributes as $attribute)
+                            <option value="{{ $attribute->id }}">{{ $attribute->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-4">
+                    <input type="text" class="form-control{{ $errors->store->has('name') ? ' is-invalid' : '' }}" value="{{ old('name') }}" name="_value" id="product-name">
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-attr-remove>&times;</button>
+                </div>
+            </div>
             <button type="submit" class="btn btn-primary">{{ __('common.save_button_text') }}</button>
             <a href="{{ route('products.delete', ['product' => $product->id]) }}" class="float-right text-danger">{{ __('common.delete_link_text') }}</a>
         </form>

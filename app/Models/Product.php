@@ -9,6 +9,17 @@ class Product extends Model
     protected $fillable = [
         'name',
         'description',
-        'image'
+        'image',
+        'type_id'
     ];
+
+    public function attributes()
+    {
+        return $this->belongsToMany('App\Models\Attribute', 'products_attributes')->withPivot('value');
+    }
+
+    public function type()
+    {
+        return $this->hasOne('App\Models\Type', 'id', 'type_id');
+    }
 }

@@ -122,11 +122,6 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        /*foreach($product->attributes as $attr)
-        {
-            echo $attr['name'].' : '.$attr->pivot->value;
-        }*/
-
         return view('products.show', compact('product'));
     }
 
@@ -138,8 +133,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $attributes = Attribute::all();
-        $types = Type::all();
+        $attributes = Attribute::orderBy('id', 'desc')->get();
+        $types = Type::orderBy('id', 'desc')->get();
 
         return view('products.edit', compact('product', 'attributes', 'types'));
     }

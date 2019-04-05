@@ -16,6 +16,7 @@ class Product extends Model
     public function attributes()
     {
         return $this->belongsToMany('App\Models\Attribute', 'products_attributes')->withPivot('value');
+        //return $this->hasMany('App\Models\Attribute', 'products_attributes')->withPivot('value');
     }
 
     public function type()

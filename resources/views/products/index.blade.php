@@ -1,5 +1,9 @@
 @extends('layouts.main')
 
+@section('aside')
+    @include('partials.search')
+@endsection
+
 @section('content')
     <div class="col-12">
         <div class="page-title">

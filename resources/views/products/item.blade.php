@@ -4,7 +4,7 @@
         <img src="{{ '/public'.Storage::url($product->image) }}" class="card-img-top" alt="{{ $product->name }}">
     @endif
     <div class="card-body">
-        <h5 class="card-title">{{ $product->name }}</h5>
+        <h5 class="card-title"><a href="{{ route('products.show', ['product' => $product->id]) }}">{{ $product->name }}</a></h5>
         @if($product->description)
         <p class="card-text">{{ $product->description }}</p>
         @endif

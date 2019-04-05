@@ -3,7 +3,7 @@
 return [
     'products' => [
         'name' => 'Заголовок',
-        'description' => 'Описание',
+        'created_at' => 'Дата добавления',
     ],
     'types' => [
         'name' => 'Заголовок',

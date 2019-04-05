@@ -11,10 +11,9 @@ return [
     'editing_link_text' => 'Редактирование',
     'more_link_text' => 'Подробнее',
 
-
-
-    'choose_sort_by' => '-- Поле сортировки --',
-    'choose_order_by' => '-- Направление --',
+    'choose_sort_by' => 'Поле сортировки',
+    'choose_order_by' => 'Направление',
+    'option_default' => 'По умолчанию',
     'orders' => [
         'asc' => 'По возрастанию',
         'desc' => 'По убыванию'

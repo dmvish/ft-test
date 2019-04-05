@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 use Validator;
 
@@ -25,6 +25,8 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+        \DB::enableQueryLog();
+
         $allowedOrders = ['desc', 'asc'];
         $orderBy = (in_array($request->input('order_by'), $allowedOrders)) ? $request->input('order_by') : 'desc';
 
@@ -33,12 +35,57 @@ class ProductController extends Controller
 
         $limit = (int) $request->input('limit') ?: 15;
 
-        $products = Product::orderBy($sortBy, $orderBy)
+        /*$products = Product::orderBy($sortBy, $orderBy)
+            ->paginate($limit);*/
+
+
+        //$products = Product::with('attributes')->get();
+        //dd($products);
+
+        $products = Product::query();
+        if($request->input('name'))
+        {
+            $products = $products->where('name', 'like', '%'.$request->input('name').'%');
+        }
+
+        if($request->has('attr')) {
+            $attrs = $request->input('attr');
+
+            $products = $products->whereHas('attributes', function ($query) use ($attrs) {
+                foreach ($attrs as $index => $value)
+                {
+                    if( ! empty($value))
+                    {
+                        $query->where(function ($query) use ($index, $value) {
+                            $query->where('attribute_id', '=', $index)
+                                ->where('value', 'like', '%'.$value.'%');
+                        });
+                    }
+                }
+            });
+        }
+
+        //dd($products->toSql(), $products->getBindings());
+
+        $products = $products->orderBy($sortBy, $orderBy)
             ->paginate($limit);
+
+        $getAttrs = DB::table('products_attributes')
+            ->groupBy('attribute_id')
+            ->get();
+
+        $attributes = [];
+
+        foreach($getAttrs as $attr)
+        {
+            $attributes[] = Attribute::find($attr->attribute_id);
+        }
 
         $queryParams = Input::except('page');
 
-        return view('products.index', compact('products', 'queryParams'));
+        //print_r(\DB::getQueryLog()); die();
+
+        return view('products.index', compact('products', 'queryParams', 'attributes'));
     }
 
     /**
@@ -115,6 +162,8 @@ class ProductController extends Controller
             }
         }
 
+        Cache::store('file')->forever('product:'.$newProduct->id, serialize($newProduct));
+
         $responseMessages[] = [
             'status' => 'success',
             'message' => __('products.successful_added')
@@ -133,6 +182,12 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        if (Cache::has('product:'.$product->id))
+        {
+            $product = unserialize(Cache::get('product:'.$product->id, $product));
+            $product->cached = true;
+        }
+
         return view('products.show', compact('product'));
     }
 
@@ -221,6 +276,9 @@ class ProductController extends Controller
                 }
             }
         }
+
+        $product = Product::find($product->id);
+        Cache::store('file')->forever('product:'.$product->id, serialize($product));
 
         $responseMessages[] = [
             'status' => 'success',

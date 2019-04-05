@@ -3,7 +3,9 @@
 namespace App\Observers;
 
 use App\Models\Product;
+
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class ProductObserver
 {
@@ -32,6 +34,7 @@ class ProductObserver
     public function deleted(Product $product)
     {
         Storage::disk('public')->delete($product->image);
+        Cache::forget('product:'.$product->id);
     }
 
     /**

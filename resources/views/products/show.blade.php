@@ -30,6 +30,9 @@
                         <p class="card-text">
                             <a href="{{ route('products.edit', ['product' => $product->id]) }}" class="card-link">{{ __('common.edit_link_text') }}</a>
                         </p>
+                        @if($product->cached)
+                            <small class="text-muted">from cache</small>
+                        @endif
                     </div>
                 </div>
             </div>

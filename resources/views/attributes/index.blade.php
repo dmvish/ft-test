@@ -8,13 +8,7 @@
             <small class="text-muted">@if(count($attributes) > 0) {{ count($attributes) }} @endif</small>
         </h2>
     </div>
-    @if(session('responseMessages'))
-        @foreach(session('responseMessages') as $status => $message)
-            <div class="alert alert-{{ $status }} mb-3">
-                {{ $message }}
-            </div>
-        @endforeach
-    @endif
+    @include('partials.response')
     @if(count($attributes) > 0)
     <table class="table">
         <thead>

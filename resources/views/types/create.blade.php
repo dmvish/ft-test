@@ -7,13 +7,7 @@
                 {{ __('types.new_item_text') }}
             </h2>
         </div>
-        @if (session('responseMessages'))
-            @foreach(session('responseMessages') as $status => $message)
-                <div class="alert alert-{{ $status }} mb-3">
-                    {{ $message }}
-                </div>
-            @endforeach
-        @endif
+        @include('partials.response')
         <form method="post" action="{{ route('types.store') }}" class="needs-validation{{ $errors->store->has('name') ? ' was-validated' : '' }}">
             @csrf
             <div class="form-group">

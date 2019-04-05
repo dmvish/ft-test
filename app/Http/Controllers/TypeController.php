@@ -58,7 +58,10 @@ class TypeController extends Controller
         Type::create($typeData);
 
         Session::flash('responseMessages', [
-            'success' => __('types.successful_added')
+            [
+                'status' => 'success',
+                'message' => __('types.successful_added')
+            ]
         ]);
 
         return redirect()->route('types.create');
@@ -111,7 +114,10 @@ class TypeController extends Controller
         $type->update($typeData);
 
         Session::flash('responseMessages', [
-            'success' => __('types.successful_updated')
+            [
+                'status' => 'success',
+                'message' => __('types.successful_updated')
+            ]
         ]);
 
         return redirect()->route('types.edit', ['type' => $type->id]);
@@ -139,7 +145,10 @@ class TypeController extends Controller
         $type->delete($type->id);
 
         Session::flash('responseMessages', [
-            'success' => __('types.successful_deleted')
+            [
+                'status' => 'success',
+                'message' => __('types.successful_deleted')
+            ]
         ]);
 
         return redirect()->route('types.index');

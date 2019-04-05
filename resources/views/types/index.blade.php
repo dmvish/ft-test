@@ -8,13 +8,7 @@
             <small class="text-muted">@if(count($types) > 0) {{ count($types) }} @endif</small>
         </h2>
     </div>
-    @if(session('responseMessages'))
-        @foreach(session('responseMessages') as $status => $message)
-            <div class="alert alert-{{ $status }} mb-3">
-                {{ $message }}
-            </div>
-        @endforeach
-    @endif
+    @include('partials.response')
     @if(count($types) > 0)
     <table class="table">
         <thead>

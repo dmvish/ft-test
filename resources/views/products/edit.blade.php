@@ -11,13 +11,7 @@
                 {{ __('common.editing_link_text') }}
             </h2>
         </div>
-        @if (session('responseMessages'))
-            @foreach(session('responseMessages') as $status => $message)
-                <div class="alert alert-{{ $status }} mb-3">
-                    {{ $message }}
-                </div>
-            @endforeach
-        @endif
+        @include('partials.response')
         <form method="post" action="{{ route('products.update', ['product' => $product->id]) }}" class="needs-validation{{ $errors->edit->has('name') ? ' was-validated' : '' }}" enctype="multipart/form-data">
             @csrf
             {{ method_field('put') }}

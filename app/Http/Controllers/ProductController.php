@@ -85,6 +85,8 @@ class ProductController extends Controller
 
         $newProduct = Product::create($productData);
 
+        $responseMessages = [];
+
         if($request->has('attributes'))
         {
             $attributes = $request->input('attributes');
@@ -96,8 +98,14 @@ class ProductController extends Controller
                     'value' => 'max:255'
                 ]);
 
-                if (!$validator->fails())
+                if ($validator->fails())
                 {
+                    $responseMessages[] = [
+                        'status' => 'warning',
+                        'message' => __('products.some_attributes_not_added')
+                    ];
+
+                }else{
                     DB::table('products_attributes')->insert([
                         'product_id' => $newProduct->id,
                         'attribute_id' => $attribute['id'],
@@ -107,9 +115,12 @@ class ProductController extends Controller
             }
         }
 
-        Session::flash('responseMessages', [
-            'success' => __('products.successful_added')
-        ]);
+        $responseMessages[] = [
+            'status' => 'success',
+            'message' => __('products.successful_added')
+        ];
+
+        Session::flash('responseMessages', $responseMessages);
 
         return redirect()->route('products.create');
     }
@@ -182,6 +193,8 @@ class ProductController extends Controller
             ->where('product_id', '=', $product->id)
             ->delete();
 
+        $responseMessages = [];
+
         if($request->has('attributes'))
         {
             $attributes = $request->input('attributes');
@@ -193,8 +206,13 @@ class ProductController extends Controller
                     'value' => 'max:255'
                 ]);
 
-                if (!$validator->fails())
+                if ($validator->fails())
                 {
+                    $responseMessages[] = [
+                        'status' => 'warning',
+                        'message' => __('products.some_attributes_not_added')
+                    ];
+                }else{
                     DB::table('products_attributes')->insert([
                         'product_id' => $product->id,
                         'attribute_id' => $attribute['id'],
@@ -204,9 +222,12 @@ class ProductController extends Controller
             }
         }
 
-        Session::flash('responseMessages', [
-            'success' => __('products.successful_updated')
-        ]);
+        $responseMessages[] = [
+            'status' => 'success',
+            'message' => __('products.successful_updated')
+        ];
+
+        Session::flash('responseMessages', $responseMessages);
 
         return redirect()->route('products.edit', ['product' => $product->id]);
     }
@@ -233,7 +254,10 @@ class ProductController extends Controller
         $product->delete($product->id);
 
         Session::flash('responseMessages', [
-            'success' => __('products.successful_deleted')
+            [
+                'status' => 'success',
+                'message' => __('products.successful_deleted')
+            ]
         ]);
 
         return redirect()->route('products.index');

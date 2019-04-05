@@ -16,4 +16,5 @@ return [
     'list_header_text' => 'Продукты',
     'new_item_text' => 'Новый продукт',
     'add_attribute' => 'Добавить атрибут',
+    'some_attributes_not_added' => 'Некоторые атрибуты не были добавлены'
 ];

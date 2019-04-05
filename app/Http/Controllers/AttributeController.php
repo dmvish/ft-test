@@ -58,7 +58,10 @@ class AttributeController extends Controller
         Attribute::create($attrData);
 
         Session::flash('responseMessages', [
-            'success' => __('attributes.successful_added')
+            [
+                'status' => 'success',
+                'message' => __('attributes.successful_added')
+            ]
         ]);
 
         return redirect()->route('attributes.create');
@@ -111,7 +114,10 @@ class AttributeController extends Controller
         $attribute->update($attrData);
 
         Session::flash('responseMessages', [
-            'success' => __('attributes.successful_updated')
+            [
+                'status' => 'success',
+                'message' => __('attributes.successful_updated')
+            ]
         ]);
 
         return redirect()->route('attributes.edit', ['attribute' => $attribute->id]);
@@ -139,7 +145,10 @@ class AttributeController extends Controller
         $attribute->delete($attribute->id);
 
         Session::flash('responseMessages', [
-            'success' => __('attributes.successful_deleted')
+            [
+                'status' => 'success',
+                'message' => __('attributes.successful_deleted')
+            ]
         ]);
 
         return redirect()->route('attributes.index');
